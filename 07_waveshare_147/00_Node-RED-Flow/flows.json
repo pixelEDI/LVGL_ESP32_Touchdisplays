@@ -1,0 +1,156 @@
+[
+    {
+        "id": "66cc11161faa301c",
+        "type": "tab",
+        "label": "dashboard_147",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0fa04b9948b8a3c9",
+        "type": "mqtt in",
+        "z": "66cc11161faa301c",
+        "name": "",
+        "topic": "dashboard/update",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "389e54e41cb1b5af",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 330,
+        "y": 140,
+        "wires": [
+            [
+                "2c45dd1154df692f"
+            ]
+        ]
+    },
+    {
+        "id": "90d2c6daa57a2525",
+        "type": "mqtt out",
+        "z": "66cc11161faa301c",
+        "name": "",
+        "topic": "dashboard/newvalues",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "389e54e41cb1b5af",
+        "x": 800,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "db4b32c82b32dda9",
+        "type": "inject",
+        "z": "66cc11161faa301c",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 340,
+        "y": 200,
+        "wires": [
+            [
+                "2c45dd1154df692f"
+            ]
+        ]
+    },
+    {
+        "id": "2648bfb381481c96",
+        "type": "debug",
+        "z": "66cc11161faa301c",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "2c45dd1154df692f",
+        "type": "function",
+        "z": "66cc11161faa301c",
+        "name": "random values",
+        "func": "\nvar temperature = Math.random() * 100;\nvar humidity = Math.random() * 100;\nvar voltage = Math.random() * 12;\n\nvar currentDate = new Date();\nvar formattedDate = (currentDate.getDate()).toString().padStart(2, '0') + \".\" +\n    (currentDate.getMonth() + 1).toString().padStart(2, '0') + \".\" +\n    currentDate.getFullYear().toString().slice(2);\nvar formattedTime = currentDate.getHours().toString().padStart(2, '0') + \":\" +\n    currentDate.getMinutes().toString().padStart(2, '0');\n\nvar output = {\n    temperature: temperature.toFixed(0),\n    humidity: humidity.toFixed(0),\n    voltage: voltage.toFixed(0),\n    date: formattedDate,\n    time: formattedTime\n};\n\nmsg.payload = output;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 180,
+        "wires": [
+            [
+                "2648bfb381481c96",
+                "90d2c6daa57a2525"
+            ]
+        ]
+    },
+    {
+        "id": "813792f2ad5b67cf",
+        "type": "comment",
+        "z": "66cc11161faa301c",
+        "name": "Hier gibts noch mehr Node-RED Content: https://www.youtube.com/@pixeledi",
+        "info": "",
+        "x": 530,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "389e54e41cb1b5af",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "65.21.105.35",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

@@ -1,0 +1,190 @@
+[
+    {
+        "id": "8a8c4e8347ad9345",
+        "type": "tab",
+        "label": "vocabel_trainer",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5469b9a8cef22979",
+        "type": "inject",
+        "z": "8a8c4e8347ad9345",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "14f87041676cc621"
+            ]
+        ]
+    },
+    {
+        "id": "85bcf6123e72a5eb",
+        "type": "mqtt in",
+        "z": "8a8c4e8347ad9345",
+        "name": "",
+        "topic": "voc/generate",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "389e54e41cb1b5af",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 430,
+        "y": 280,
+        "wires": [
+            [
+                "14f87041676cc621"
+            ]
+        ]
+    },
+    {
+        "id": "33b391b4bd2a74ce",
+        "type": "debug",
+        "z": "8a8c4e8347ad9345",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0802e37e480d2234",
+        "type": "mysql",
+        "z": "8a8c4e8347ad9345",
+        "mydb": "dedeba7a43626f5e",
+        "name": "",
+        "x": 830,
+        "y": 320,
+        "wires": [
+            [
+                "db46939a5d5e3eb8"
+            ]
+        ]
+    },
+    {
+        "id": "14f87041676cc621",
+        "type": "function",
+        "z": "8a8c4e8347ad9345",
+        "name": "SQL SELECT",
+        "func": "// SQL-Abfrage, um zufällig 4 Einträge auszuwählen\nmsg.topic = \"SELECT * FROM vokabeln ORDER BY RAND() LIMIT 4;\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 320,
+        "wires": [
+            [
+                "0802e37e480d2234"
+            ]
+        ]
+    },
+    {
+        "id": "db46939a5d5e3eb8",
+        "type": "function",
+        "z": "8a8c4e8347ad9345",
+        "name": "mixit",
+        "func": "// Eingehendes JSON (dies ist das, was du aus der Datenbank bekommst)\nlet vokabeln = msg.payload;\n\n// Arrays für die deutschen und italienischen Vokabeln\nlet german_voc = [];\nlet italian_voc = [];\n\n// Verarbeite jede Vokabel und füge sie in das richtige Array ein\nvokabeln.forEach(function (vokabel) {\n    german_voc.push({ id: vokabel.id, de: vokabel.de });\n    italian_voc.push({ id: vokabel.id, it: vokabel.it });\n});\n\n// Funktion, um ein Array zufällig zu mischen (Fisher-Yates Shuffle)\nfunction shuffleArray(array) {\n    for (let i = array.length - 1; i > 0; i--) {\n        const j = Math.floor(Math.random() * (i + 1));\n        [array[i], array[j]] = [array[j], array[i]]; // Tausche Elemente\n    }\n}\n\n// Mische beide Arrays zufällig\nshuffleArray(german_voc);\nshuffleArray(italian_voc);\n\n// Neues JSON mit den gemischten Arrays\nlet result = {\n    german_voc: german_voc,\n    italian_voc: italian_voc\n};\n\n// Setze das resultierende JSON als die Nachricht\nmsg.payload = result;\n\n// Rückgabe der Nachricht\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 320,
+        "wires": [
+            [
+                "33b391b4bd2a74ce",
+                "355bd1dc15fda9d6"
+            ]
+        ]
+    },
+    {
+        "id": "355bd1dc15fda9d6",
+        "type": "mqtt out",
+        "z": "8a8c4e8347ad9345",
+        "name": "",
+        "topic": "voc/new",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "389e54e41cb1b5af",
+        "x": 1120,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "389e54e41cb1b5af",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "65.21.105.35",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "dedeba7a43626f5e",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "65.21.105.35",
+        "port": "3306",
+        "db": "magicstuff",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]
