@@ -157,8 +157,8 @@ void setup()
 
     // attempt to connect to Wifi network:
     Serial.print("Connecting to Wifi SSID ");
-    Serial.print(WIFI_SSID);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    // Serial.print(WIFI_SSID);
+    WiFi.begin(ssid, password);
 
     secured_client.setInsecure(); // You should probably use a cert for this!
 
