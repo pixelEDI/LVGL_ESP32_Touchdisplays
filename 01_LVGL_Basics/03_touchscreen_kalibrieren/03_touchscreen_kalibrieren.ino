@@ -1,12 +1,12 @@
-       _          _          _ _
- _ __ (_)_  _____| | ___  __| (_)
-| '_ \| \ \/ / _ \ |/ _ \/ _` | |
-| |_) | |>  <  __/ |  __/ (_| | |
-| .__/|_/_/\_\___|_|\___|\__,_|_|
-|_|
-https://links.pixeledi.eu
-LVGL mit ESP32 | 04.2025
-
+//        _          _          _ _
+//  _ __ (_)_  _____| | ___  __| (_)
+// | '_ \| \ \/ / _ \ |/ _ \/ _` | |
+// | |_) | |>  <  __/ |  __/ (_| | |
+// | .__/|_/_/\_\___|_|\___|\__,_|_|
+// |_|
+// https://links.pixeledi.eu
+// LVGL mit ESP32 | 04.2025
+//
 // https://www.ti.com/lit/an/slyt277/slyt277.pdf
 // https://github.com/CF20852/ESP32-2432S028-Touchscreen-Calibration
 //  Example created by Robert (Chip) Fleming for touchscreen calibration (https://github.com/CF20852/ESP32-2432S028-Touchscreen-Calibration)
