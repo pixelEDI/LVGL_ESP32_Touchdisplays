@@ -12,4 +12,3 @@ Noch weitere Beispiele bei mir auf YouTube:
 * `touchscreen:` Konfiguration (XPT2046): [https://esphome.io/components/touchscreen/xpt2046.html](https://esphome.io/components/touchscreen/xpt2046.html)
 * Beispiel-Repo von witnessmenow: [https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome)
 
-
