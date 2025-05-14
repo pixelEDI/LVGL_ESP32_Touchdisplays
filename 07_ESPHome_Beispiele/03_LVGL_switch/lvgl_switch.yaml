@@ -1,0 +1,107 @@
+#        _          _          _ _
+#  _ __ (_)_  _____| | ___  __| (_)
+# | '_ \| \ \/ / _ \ |/ _ \/ _` | |
+# | |_) | |>  <  __/ |  __/ (_| | |
+# | .__/|_/_/\_\___|_|\___|\__,_|_|
+# |_|
+# https://links.pixeledi.eu
+# CYD mit ESPHome | 05.2025
+#
+substitutions:
+  device_name: cyd 
+  friendly_name: cyd 
+
+esphome:
+  name: $device_name
+  friendly_name: $friendly_name
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: Display Backlight
+    id: backlight
+    restore_mode: ALWAYS_ON
+  - platform: binary
+    output: gpio4_out
+    id: local_light
+    name: "GPIO 4 Light"
+    on_state:
+      - lvgl.widget.update:
+          id: light_switch
+          state:
+            checked: !lambda return id(local_light).current_values.is_on();
+
+# Details von GPIOs findet man auch unter :/home/deinuser/Arduino/libraries/TFT_eSPI/User_Setup.h 
+spi:
+  - id: tft
+    clk_pin: GPIO14
+    mosi_pin: GPIO13
+    miso_pin: GPIO12
+  - id: touch
+    clk_pin: GPIO25
+    mosi_pin: GPIO32
+    miso_pin: GPIO39
+
+output:
+  - platform: ledc
+    pin: GPIO21
+    id: backlight_pwm
+  - platform: gpio
+    pin: GPIO4
+    id: gpio4_out
+    inverted: true
+
+lvgl:
+  buffer_size: 25%
+  touchscreens:
+    - my_touch
+  pages:
+    - id: main_page
+      widgets:
+        - switch:
+            id: light_switch
+            align: CENTER
+            on_click:
+              light.toggle: local_light
+        - label:
+            id: label_led
+            align: CENTER
+            y: -50
+            text: "Einmal umdrehen und LED bewundern"
+
+touchscreen:
+  - platform: xpt2046
+    id: my_touch
+    spi_id: touch
+    cs_pin: GPIO33
+    interrupt_pin: GPIO36
+    calibration:
+      x_min: 200
+      x_max: 3900
+      y_min: 200
+      y_max: 3900   
+    transform:
+      mirror_x: false
+      mirror_y: false
+      swap_xy: false
+
+
+# CYD = ili9xxx platform
+display:
+  - platform: ili9xxx
+    model: ili9341
+    spi_id: tft 
+    cs_pin: GPIO15
+    dc_pin: GPIO2
+    rotation: 90
+    invert_colors: false
+    # color_palette: 8BIT
+    auto_clear_enabled: false
+    update_interval: never

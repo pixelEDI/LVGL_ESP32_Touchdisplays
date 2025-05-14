@@ -1,7 +1,7 @@
 #
 # Basic yaml code to get the ESP32-2432S028R display to work in ESPHome.
 #
-# This yaml displays a graph of a Home Assistant temperature sensor.
+# This yaml displays the ESPHome logo and the current date and time.
 #
 # Written by Jonny Bergdahl
 # - [GitHub](https://github.com/jonnybergdahl)
@@ -72,34 +72,26 @@ captive_portal:
 # Create a font to use, add and remove glyphs as needed. 
 font:
   - file: 'fonts/Arimo-Regular.ttf'
-    id: arimo48
-    size: 48
-    glyphs: " .,°0123456789C"
+    id: arimo24
+    size: 24
+    glyphs: "!\"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ abcdefghijklmnopqrstuvwxyzåäö"
   - file: 'fonts/Arimo-Regular.ttf'
-    id: arimo14
-    size: 14
-    glyphs: "0123456789"
+    id: arimo96
+    size: 96
+    glyphs: ":0123456789"
 
 # Create a Home Assistant blue color
 color:
-  - id: white
-    hex: ffffff
   - id: ha_blue
     hex: 51c0f2
 
-# Define the graph
-# You can change the duration as needed, but you will need to change x_grid accordingly.
-graph:
-  - id: officegraph
-    sensor: bme280_temperature 
-    duration: 10min
-    width: 300
-    height: 180
-    x_grid: 10sec
-    y_grid: 5.0
-    max_value: 35.0
-    min_value: 15.0
-    color: ha_blue
+# Create an ESPHome logo image
+# pip install puremagic --break-system-packages
+
+image:
+  - file: "images/pixeledi.png"
+    id: esphome_image
+    type: RGB
 
 # ============================================================ 
 # Home Assistant related setup
@@ -111,37 +103,23 @@ light:
     id: backlight
     restore_mode: ALWAYS_ON
 
-# Setup the sensor, we will get this data from Home Assistant
-# Change entity_id to the name of your sensor inside of Home Assistant
-# sensor:
+# Create a time sensor, this will fetch time from Home Assistant
+# time:
 #   - platform: homeassistant
-#     id: temperature
-#     entity_id: sensor.bthome_office_thermometer_temperature
-#     internal: true
+#     id: esptime
 
-# BME 280
-#
-sensor:
-  - platform: bme280_i2c
-    i2c_id: bus_i2c
-    address: 0x76
-    temperature:
-      name: "BME280 Temperature"
-      id: bme280_temperature
-    pressure:
-      name: "BME280 Pressure"
-      id: bme280_pressure
-    humidity:
-      name: "BME280 Relative Humidity"
-      id: bme280_humidity
-    update_interval: 10s
+# falls kein HA dann direkt via NTP-Server die Zeit holen    
+# https://esphome.io/components/time/sntp.html
+time:
+  - platform: sntp
+    id: esptime 
+    timezone: Europe/Berlin
+    servers:
+     - 0.pool.ntp.org
+     - 1.pool.ntp.org
+     - 2.pool.ntp.org
 
 
-i2c:
-  id: bus_i2c
-  sda: GPIO27
-  scl: GPIO22
-  scan: True
 
 # ============================================================ 
 # Hardware related setup
@@ -167,8 +145,8 @@ output:
 #
 # Display is used as 240x320 by default so we rotate it to 90°
 #
-# We print the graph texts manaully as the graph component still don't support that, then
-# we output the current value on top of the display, followed by the graph below it.
+# We print date and time wth the strftime() function, see the ESPHome documentation to 
+# format date and atime to your locale.
 #
 display:
   - platform: ili9xxx
@@ -178,22 +156,11 @@ display:
     dc_pin: GPIO2
     rotation: 90
     invert_colors: false
+    color_palette: 8BIT
     lambda: |-
-      // Display-Vorbereitung
-      it.fill(id(Color::BLACK));
-      it.print(0, 60, id(arimo14), TextAlign::TOP_LEFT, "35");
-      it.print(0, 105, id(arimo14), TextAlign::CENTER_LEFT, "30");
-      it.print(0, 150, id(arimo14), TextAlign::CENTER_LEFT, "25");
-      it.print(0, 195, id(arimo14), TextAlign::CENTER_LEFT, "20");
-      it.print(0, 240, id(arimo14), TextAlign::BOTTOM_LEFT, "15");
+      it.fill(id(ha_blue));
+      it.image(120,10, id(esphome_image));
+      it.print(160, 100, id(arimo24), TextAlign::CENTER, "pixeledi");
+      it.strftime(40, 120, id(arimo96), "%H:%M", id(esptime).now());
 
-      // Temperaturwert prüfen und im Log ausgeben
-      if (id(bme280_temperature).state != NAN) {
-        it.printf(160, 0, id(arimo48), TextAlign::TOP_CENTER, "%.1f °C", id(bme280_temperature).state);
-        
-        // Log-Ausgabe der Temperatur
-        ESP_LOGD("yellowtft1", "Aktuelle Temperatur: %.1f °C", id(bme280_temperature).state);
-      } else {
-        ESP_LOGW("yellowtft1", "Temperaturwert ist ungültig!");
-      }
-      it.graph(20, 60, id(officegraph));
+#it.strftime(100, 100, id(arimo24), "%Y-%m-%d", id(esptime).now());

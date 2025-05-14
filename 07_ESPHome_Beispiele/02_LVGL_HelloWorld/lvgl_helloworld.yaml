@@ -22,19 +22,6 @@ esp32:
 
 logger:
 
-# eigene Font zum darstellen von Inhalten 
-# falls fehler kommt
-# pip install freetype-py --break-system-packages
-font:
-  - file: 'fonts/Roboto.ttf'
-    id: roboto20 
-    size: 20
-    glyphs: "!\"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ abcdefghijklmnopqrstuvwxyzåäö"
-
-color:
-  - id: brown 
-    hex: caa445    
-
 light:
   - platform: monochromatic
     output: backlight_pwm
@@ -42,7 +29,7 @@ light:
     id: backlight
     restore_mode: ALWAYS_ON
 
-    # Details von GPIOs findet man auch unter :/home/deinuser/Arduino/libraries/TFT_eSPI/User_Setup.h 
+# Details von GPIOs findet man auch unter :/home/deinuser/Arduino/libraries/TFT_eSPI/User_Setup.h 
 spi:
   - id: tft
     clk_pin: GPIO14
@@ -58,6 +45,9 @@ output:
     pin: GPIO21
     id: backlight_pwm
 
+lvgl:
+  buffer_size: 25%
+
 # CYD = ili9xxx platform
 display:
   - platform: ili9xxx
@@ -67,7 +57,4 @@ display:
     dc_pin: GPIO2
     rotation: 90
     invert_colors: false
-    color_palette: 8BIT
-    lambda: |-
-      it.print(160, 140, id(roboto20), id(brown), TextAlign::BOTTOM_CENTER, "Hello pixeledi from esphome!");
-      it.rectangle(0, 0, 320, 240, id(brown));
+    # color_palette: 8BIT

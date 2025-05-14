@@ -1,7 +1,8 @@
+
 #
 # Basic yaml code to get the ESP32-2432S028R display to work in ESPHome.
 #
-# This yaml displays two rectangles acting as binary touch sensors inside of Home Assistant.
+# This yaml displays a graph of a Home Assistant temperature sensor.
 #
 # Written by Jonny Bergdahl
 # - [GitHub](https://github.com/jonnybergdahl)
@@ -44,42 +45,40 @@ esp32:
 # Enable logging
 logger:
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret api_key
-
-# Set OTA password
-ota:
-  platform: esphome
-  password: !secret ota_password
-
-# Setup WiFi credentials
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: $device_name Fallback Hotspot
-    password: !secret ap_password
-
-captive_portal:
-
 # ============================================================ 
 # ESPHome Display related setup
 #
 # Create a font to use, add and remove glyphs as needed. 
 font:
   - file: 'fonts/Arimo-Regular.ttf'
-    id: arimo96
-    size: 96
-    glyphs: "AB"
+    id: arimo48
+    size: 48
+    glyphs: " .,°0123456789C"
+  - file: 'fonts/Arimo-Regular.ttf'
+    id: arimo14
+    size: 14
+    glyphs: "0123456789"
 
 # Create a Home Assistant blue color
 color:
+  - id: white
+    hex: ffffff
   - id: ha_blue
     hex: 51c0f2
+
+# Define the graph
+# You can change the duration as needed, but you will need to change x_grid accordingly.
+graph:
+  - id: officegraph
+    sensor: bme280_temperature 
+    duration: 10min
+    width: 300
+    height: 180
+    x_grid: 10sec
+    y_grid: 5.0
+    max_value: 35.0
+    min_value: 15.0
+    color: ha_blue
 
 # ============================================================ 
 # Home Assistant related setup
@@ -91,21 +90,37 @@ light:
     id: backlight
     restore_mode: ALWAYS_ON
 
-# Setup two binary sensors for the two areas for touch
-binary_sensor:
-  - platform: touchscreen
-    name: Button A
-    x_min: 20
-    x_max: 140
-    y_min: 60
-    y_max: 180
+# Setup the sensor, we will get this data from Home Assistant
+# Change entity_id to the name of your sensor inside of Home Assistant
+# sensor:
+#   - platform: homeassistant
+#     id: temperature
+#     entity_id: sensor.bthome_office_thermometer_temperature
+#     internal: true
 
-  - platform: touchscreen
-    name: Button B
-    x_min: 180
-    x_max: 300
-    y_min: 60
-    y_max: 180
+# BME 280
+#
+sensor:
+  - platform: bme280_i2c
+    i2c_id: bus_i2c
+    address: 0x76
+    temperature:
+      name: "BME280 Temperature"
+      id: bme280_temperature
+    pressure:
+      name: "BME280 Pressure"
+      id: bme280_pressure
+    humidity:
+      name: "BME280 Relative Humidity"
+      id: bme280_humidity
+    update_interval: 10s
+
+
+i2c:
+  id: bus_i2c
+  sda: GPIO27
+  scl: GPIO22
+  scan: True
 
 # ============================================================ 
 # Hardware related setup
@@ -131,8 +146,8 @@ output:
 #
 # Display is used as 240x320 by default so we rotate it to 90°
 #
-# We print date and time wth the strftime() function, see the ESPHome documentation to 
-# format date and atime to your locale.
+# We print the graph texts manaully as the graph component still don't support that, then
+# we output the current value on top of the display, followed by the graph below it.
 #
 display:
   - platform: ili9xxx
@@ -142,25 +157,23 @@ display:
     dc_pin: GPIO2
     rotation: 90
     invert_colors: false
+    color_palette: 8BIT
     lambda: |-
+      // Display-Vorbereitung
       it.fill(id(Color::BLACK));
-      it.filled_rectangle(20, 60, 120, 120, id(ha_blue));
-      it.filled_rectangle(180, 60, 120, 120, id(ha_blue));
-      it.print(80, 120, id(arimo96), TextAlign::CENTER, "A");
-      it.print(240, 120, id(arimo96), TextAlign::CENTER, "B");
+      it.print(0, 60, id(arimo14), TextAlign::TOP_LEFT, "35");
+      it.print(0, 105, id(arimo14), TextAlign::CENTER_LEFT, "30");
+      it.print(0, 150, id(arimo14), TextAlign::CENTER_LEFT, "25");
+      it.print(0, 195, id(arimo14), TextAlign::CENTER_LEFT, "20");
+      it.print(0, 240, id(arimo14), TextAlign::BOTTOM_LEFT, "15");
 
-# Set up the xpt2046 touch platform
-touchscreen:
-  platform: xpt2046
-  spi_id: touch
-  cs_pin: GPIO33
-  interrupt_pin: GPIO36
-  update_interval: 50ms
-  threshold: 400
-  calibration:
-    x_min: 280
-    x_max: 3860
-    y_min: 340
-    y_max: 3860
-  transform:
-    swap_xy: false      
+      // Temperaturwert prüfen und im Log ausgeben
+      if (id(bme280_temperature).state != NAN) {
+        it.printf(160, 0, id(arimo48), TextAlign::TOP_CENTER, "%.1f °C", id(bme280_temperature).state);
+        
+        // Log-Ausgabe der Temperatur
+        ESP_LOGD("yellowtft1", "Aktuelle Temperatur: %.1f °C", id(bme280_temperature).state);
+      } else {
+        ESP_LOGW("yellowtft1", "Temperaturwert ist ungültig!");
+      }
+      it.graph(20, 60, id(officegraph));
