@@ -1,8 +1,7 @@
-Hier ist deine übersichtlichere README mit allen Links in spitzen Klammern:
+Noch weitere Beispiele bei mir auf YouTube: 
+<https://www.youtube.com/watch?v=t-qZ7ItXSTc&list=PLluslK6uBf4tvNbPWs3V3HMyiCLah0W0u>
 
----
 
-# Links für ESPHome-Beispiele mit CYD
 
 * ESPHome-Vorlage: [https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome)
 * ESPHome ILI9xxx LCD-Serie: [https://esphome.io/components/display/ili9xxx.html](https://esphome.io/components/display/ili9xxx.html)
@@ -13,4 +12,4 @@ Hier ist deine übersichtlichere README mit allen Links in spitzen Klammern:
 * `touchscreen:` Konfiguration (XPT2046): [https://esphome.io/components/touchscreen/xpt2046.html](https://esphome.io/components/touchscreen/xpt2046.html)
 * Beispiel-Repo von witnessmenow: [https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/tree/main/Examples/ESPHome)
 
----
+
