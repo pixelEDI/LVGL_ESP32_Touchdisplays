@@ -1,6 +1,6 @@
 # LVGL und ESP32 Touchdisplays Kurs Repositories
 
-Dieses Repository enthält die Codebeispiele und Projekte, die im Online-Kurs (https://pixeledi.teachable.com) verwendet werden.
+Dieses Repository enthält die Codebeispiele und Projekte, die im Online-Kurs (https://pixeledi.eu/akademie/lvgl) verwendet werden.
 
 ## Inhalte
 
