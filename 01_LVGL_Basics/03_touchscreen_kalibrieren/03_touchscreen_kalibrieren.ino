@@ -11,6 +11,13 @@
 // https://github.com/CF20852/ESP32-2432S028-Touchscreen-Calibration
 //  Example created by Robert (Chip) Fleming for touchscreen calibration (https://github.com/CF20852/ESP32-2432S028-Touchscreen-Calibration)
 
+
+// Achtung - fehlende BasicLinearAlgebra Library
+// Versuch, die BasicLinearAlgebra von Tom Stewart in der Version 5.1 über den Library Manager zu installieren.
+
+// Alternativ findest du sie auch hier:
+// https://github.com/tomstewart89/BasicLinearAlgebra
+
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include <XPT2046_Touchscreen.h>
@@ -38,7 +45,7 @@ String s;
 int ts_points[6][2];
 
 /* define the screen points where touch samples will be taken */
-const int scr_points[6][2] = { {13, 11}, {20, 220}, {167, 60}, {155, 180}, {300, 13}, {295, 225} };
+const int scr_points[6][2] = { { 13, 11 }, { 20, 220 }, { 167, 60 }, { 155, 180 }, { 300, 13 }, { 295, 225 } };
 
 struct point {
   int x;
@@ -46,12 +53,12 @@ struct point {
 };
 
 /* pS is a screen point; pT is a resistive touchscreen point */
-struct point aS = {scr_points[0][0], scr_points[0][1] };
-struct point bS = {scr_points[1][0], scr_points[1][1] };
-struct point cS = {scr_points[2][0], scr_points[2][1] };
-struct point dS = {scr_points[3][0], scr_points[3][1] };
-struct point eS = {scr_points[4][0], scr_points[4][1] };
-struct point fS = {scr_points[5][0], scr_points[5][1] };
+struct point aS = { scr_points[0][0], scr_points[0][1] };
+struct point bS = { scr_points[1][0], scr_points[1][1] };
+struct point cS = { scr_points[2][0], scr_points[2][1] };
+struct point dS = { scr_points[3][0], scr_points[3][1] };
+struct point eS = { scr_points[4][0], scr_points[4][1] };
+struct point fS = { scr_points[5][0], scr_points[5][1] };
 
 struct point aT;
 struct point bT;
@@ -91,13 +98,13 @@ void display_crosshairs(int, int);
 void display_xs(int, int);
 
 /* Declare function to compute the resistive touchscreen coordinates to display coordinates conversion coefficients */
-void ts_calibration (
+void ts_calibration(
   const point, const point,
-	const point, const point,
-	const point, const point,
   const point, const point,
-	const point, const point,
-	const point, const point);
+  const point, const point,
+  const point, const point,
+  const point, const point,
+  const point, const point);
 
 void gather_cal_data(void) {
   //Function to draw the crosshairs and collect data
@@ -112,7 +119,7 @@ void gather_cal_data(void) {
     reset = true;
     x_avg = 0;
     y_avg = 0;
-    
+
     touchscreen_read_pts(reset, &finished, &x_avg, &y_avg);
 
     reset = false;
@@ -133,7 +140,7 @@ void gather_cal_data(void) {
     ts_points[i][0] = x_avg;
     ts_points[i][1] = y_avg;
 
-    String s = String("x_avg = " + String(x_avg) + " y_avg = " + String(y_avg) );
+    String s = String("x_avg = " + String(x_avg) + " y_avg = " + String(y_avg));
     Serial.println(s);
     delay(1500);
   }
@@ -171,14 +178,14 @@ void check_calibration_results(void) {
     display_crosshairs(scr_points[i][0], scr_points[i][1]);
     display_xs(x_scr, y_scr);
 
-    s = String("x_touch = " + String(x_touch) + " y_touch = " + String(y_touch) );
+    s = String("x_touch = " + String(x_touch) + " y_touch = " + String(y_touch));
     Serial.println(s);
 
-    s = String("x_scr = " + String(x_scr) + " y_scr = " + String(y_scr) );
+    s = String("x_scr = " + String(x_scr) + " y_scr = " + String(y_scr));
     Serial.println(s);
 
-    error = (int) sqrt( sq(x_scr - scr_points[i][0]) + sq(y_scr - scr_points[i][1]) );
-    s = String("error = " + String(error) );
+    error = (int)sqrt(sq(x_scr - scr_points[i][0]) + sq(y_scr - scr_points[i][1]));
+    s = String("error = " + String(error));
     Serial.println(s);
     Serial.println();
   }
@@ -186,9 +193,9 @@ void check_calibration_results(void) {
   Serial.println("******************************************************************");
   Serial.println("******************************************************************");
   Serial.println("USE THE FOLLOWING COEFFICIENT VALUES TO CALIBRATE YOUR TOUCHSCREEN");
-  s = String("Computed X:  alpha_x = " + String(alphaX, 3) + ", beta_x = " + String(betaX, 3) + ", delta_x = " + String(deltaX, 3) );
+  s = String("Computed X:  alpha_x = " + String(alphaX, 3) + ", beta_x = " + String(betaX, 3) + ", delta_x = " + String(deltaX, 3));
   Serial.println(s);
-  s = String("Computed Y:  alpha_y = " + String(-alphaY, 3) + ", beta_y = " + String(-betaY, 3) + ", delta_y = " + String(SCREEN_WIDTH-deltaY, 3) );
+  s = String("Computed Y:  alpha_y = " + String(-alphaY, 3) + ", beta_y = " + String(-betaY, 3) + ", delta_y = " + String(SCREEN_WIDTH - deltaY, 3));
   Serial.println(s);
   Serial.println("******************************************************************");
   Serial.println("******************************************************************");
@@ -198,7 +205,7 @@ void setup() {
   String LVGL_Arduino = String("LVGL Library Version: ") + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
   Serial.begin(115200);
   Serial.println(LVGL_Arduino);
-  
+
   // Start LVGL
   lv_init();
   // Register print function for debugging
@@ -212,7 +219,7 @@ void setup() {
   touchscreen.setRotation(2);
 
   // Create a display object
-  lv_display_t * disp;
+  lv_display_t *disp;
   // Initialize the TFT display using the TFT_eSPI library
   disp = lv_tft_espi_create(SCREEN_WIDTH, SCREEN_HEIGHT, draw_buf, sizeof(draw_buf));
   lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
@@ -222,8 +229,8 @@ void setup() {
   while ((millis() - delay_start) < DELAY_5S) {
     lv_task_handler();
     lv_tick_inc(10);
-    delay(10);   
-  } 
+    delay(10);
+  }
 
   /* display crosshairs and have the user tap on them until enough samples are gathered */;
   gather_cal_data();
@@ -240,7 +247,7 @@ void loop() {
   lv_tick_inc(5);     // tell LVGL how much time has passed
   delay(5);           // let this time pass
 }
- 
+
 /* Function to read a number of points from the resistive touchscreen as the user taps
    a stylus on displayed crosshairs.  Once the samples have been collected, they are
    filtered to remove outliers and then averaged and the average x & y are returned to the caller. */
@@ -260,13 +267,13 @@ void touchscreen_read_pts(bool reset, bool *finished, int *x_avg, int *y_avg) {
     *finished = false;
   }
   // Checks if Touchscreen was touched, and prints X, Y
-  if(touchscreen.tirqTouched() && touchscreen.touched()) {
+  if (touchscreen.tirqTouched() && touchscreen.touched()) {
     // Get Touchscreen points
     TS_Point p = touchscreen.getPoint();
     samples[nr_samples][0] = p.x;
     samples[nr_samples][1] = p.y;
-   
-    s = String("x, y = " + String(samples[nr_samples][0]) + ", " + String(samples[nr_samples][1]) );
+
+    s = String("x, y = " + String(samples[nr_samples][0]) + ", " + String(samples[nr_samples][1]));
     Serial.println(s);
 
     nr_samples++;
@@ -295,7 +302,7 @@ void touchscreen_read_pts(bool reset, bool *finished, int *x_avg, int *y_avg) {
       stdev_y = sqrt(stdev_y / (float)nr_samples);
 
       s = String("stdev_x = " + String(stdev_x) + ", stdev_y = " + String(stdev_y));
-      Serial.println(s);   
+      Serial.println(s);
 
       /* now average the samples that are less than one standard deviation from the mean */
       /* this filtering is called "outlier rejection," and is included because outliers were observed in testing */
@@ -307,11 +314,11 @@ void touchscreen_read_pts(bool reset, bool *finished, int *x_avg, int *y_avg) {
           filt_mean_x += (float)samples[i][0];
           filt_mean_y += (float)samples[i][1];
           good_samples++;
-        }        
+        }
       }
 
       s = String("Good samples = " + String(good_samples));
-      Serial.println(s);      
+      Serial.println(s);
 
       filt_mean_x = filt_mean_x / (float)good_samples;
       filt_mean_y = filt_mean_y / (float)good_samples;
@@ -324,8 +331,7 @@ void touchscreen_read_pts(bool reset, bool *finished, int *x_avg, int *y_avg) {
 
       *finished = true;
     }
-  }
-  else {
+  } else {
     // nada
   }
 }
@@ -333,7 +339,7 @@ void touchscreen_read_pts(bool reset, bool *finished, int *x_avg, int *y_avg) {
 /* Function to display a user instruction on startup */
 void lv_display_instruction(void) {
   // Create a text label aligned center: https://docs.lvgl.io/master/widgets/label.html
-  lv_obj_t * text_label = lv_label_create(lv_screen_active());
+  lv_obj_t *text_label = lv_label_create(lv_screen_active());
   lv_label_set_text(text_label, "Tap each crosshair until it disappears.");
   lv_obj_align(text_label, LV_ALIGN_CENTER, 0, 0);
   // Set font type and font size. More information: https://docs.lvgl.io/master/overview/font.html
@@ -346,8 +352,8 @@ void lv_display_instruction(void) {
 /* function to display crosshair at given index of coordinates array */
 void display_crosshair(int cross_nr) {
 
-  static lv_point_precise_t h_line_points[] = { {0, 0}, {10, 0} };
-  static lv_point_precise_t v_line_points[] = { {0, 0}, {0, 10} };
+  static lv_point_precise_t h_line_points[] = { { 0, 0 }, { 10, 0 } };
+  static lv_point_precise_t v_line_points[] = { { 0, 0 }, { 0, 10 } };
 
   static lv_style_t style_line;
   lv_style_init(&style_line);
@@ -356,13 +362,13 @@ void display_crosshair(int cross_nr) {
   lv_style_set_line_rounded(&style_line, true);
 
   // Create crosshair lines
-  lv_obj_t* crosshair_h = lv_line_create(lv_screen_active());
-  lv_obj_t* crosshair_v = lv_line_create(lv_screen_active());
+  lv_obj_t *crosshair_h = lv_line_create(lv_screen_active());
+  lv_obj_t *crosshair_v = lv_line_create(lv_screen_active());
 
-  lv_line_set_points(crosshair_h, h_line_points, 2); // Set the coordinates for the crosshair_h line
+  lv_line_set_points(crosshair_h, h_line_points, 2);  // Set the coordinates for the crosshair_h line
   lv_obj_add_style(crosshair_h, &style_line, 0);
 
-  lv_line_set_points(crosshair_v, v_line_points, 2); // Set the coordinates for the crosshair_h line
+  lv_line_set_points(crosshair_v, v_line_points, 2);  // Set the coordinates for the crosshair_h line
   lv_obj_add_style(crosshair_v, &style_line, 0);
 
   lv_obj_set_pos(crosshair_h, scr_points[cross_nr][0] - 5, scr_points[cross_nr][1]);
@@ -372,8 +378,8 @@ void display_crosshair(int cross_nr) {
 /* function to display crosshairs at given coordinates */
 void display_crosshairs(int x, int y) {
 
-  static lv_point_precise_t h_line_points[] = { {0, 0}, {10, 0} };
-  static lv_point_precise_t v_line_points[] = { {0, 0}, {0, 10} };
+  static lv_point_precise_t h_line_points[] = { { 0, 0 }, { 10, 0 } };
+  static lv_point_precise_t v_line_points[] = { { 0, 0 }, { 0, 10 } };
 
   static lv_style_t style_line;
   lv_style_init(&style_line);
@@ -382,13 +388,13 @@ void display_crosshairs(int x, int y) {
   lv_style_set_line_rounded(&style_line, true);
 
   // Create crosshair lines
-  lv_obj_t* crosshair_h = lv_line_create(lv_screen_active());
-  lv_obj_t* crosshair_v = lv_line_create(lv_screen_active());
+  lv_obj_t *crosshair_h = lv_line_create(lv_screen_active());
+  lv_obj_t *crosshair_v = lv_line_create(lv_screen_active());
 
-  lv_line_set_points(crosshair_h, h_line_points, 2); // Set the coordinates for the crosshair_h line
+  lv_line_set_points(crosshair_h, h_line_points, 2);  // Set the coordinates for the crosshair_h line
   lv_obj_add_style(crosshair_h, &style_line, 0);
 
-  lv_line_set_points(crosshair_v, v_line_points, 2); // Set the coordinates for the crosshair_h line
+  lv_line_set_points(crosshair_v, v_line_points, 2);  // Set the coordinates for the crosshair_h line
   lv_obj_add_style(crosshair_v, &style_line, 0);
 
   lv_obj_set_pos(crosshair_h, x - 5, y);
@@ -398,8 +404,8 @@ void display_crosshairs(int x, int y) {
 /* function to display 'X's at given coordinates */
 void display_xs(int x, int y) {
 
-  static lv_point_precise_t u_line_points[] = { {0, 0}, {10, 10} };  //upsloping
-  static lv_point_precise_t d_line_points[] = { {0, 10}, {10, 0} };  //downsloping
+  static lv_point_precise_t u_line_points[] = { { 0, 0 }, { 10, 10 } };  //upsloping
+  static lv_point_precise_t d_line_points[] = { { 0, 10 }, { 10, 0 } };  //downsloping
 
   static lv_style_t style_line;
   lv_style_init(&style_line);
@@ -408,13 +414,13 @@ void display_xs(int x, int y) {
   lv_style_set_line_rounded(&style_line, true);
 
   // Create crosshair lines
-  lv_obj_t* x_u = lv_line_create(lv_screen_active());
-  lv_obj_t* x_d = lv_line_create(lv_screen_active());
+  lv_obj_t *x_u = lv_line_create(lv_screen_active());
+  lv_obj_t *x_d = lv_line_create(lv_screen_active());
 
-  lv_line_set_points(x_u, u_line_points, 2); // Set the coordinates for the upsloping line
+  lv_line_set_points(x_u, u_line_points, 2);  // Set the coordinates for the upsloping line
   lv_obj_add_style(x_u, &style_line, 0);
 
-  lv_line_set_points(x_d, d_line_points, 2); // Set the coordinates for the downsloping line
+  lv_line_set_points(x_d, d_line_points, 2);  // Set the coordinates for the downsloping line
   lv_obj_add_style(x_d, &style_line, 0);
 
   lv_obj_set_pos(x_u, x - 5, y - 5);
@@ -426,16 +432,16 @@ void display_xs(int x, int y) {
   This was based on the Texas Instruments appnote at:
   https://www.ti.com/lit/an/slyt277/slyt277.pdf
   It implements Equation 7 of that appnote, which computes a least-squares set of coefficients. */
-void ts_calibration (
-	const point aS, const point aT,
-	const point bS, const point bT,
-	const point cS, const point cT,
+void ts_calibration(
+  const point aS, const point aT,
+  const point bS, const point bT,
+  const point cS, const point cT,
   const point dS, const point dT,
-	const point eS, const point eT,
-	const point fS, const point fT) {
+  const point eS, const point eT,
+  const point fS, const point fT) {
 
-	bool defined;
-	uint16_t screenWidth, screenHeight;
+  bool defined;
+  uint16_t screenWidth, screenHeight;
 
   BLA::Matrix<6, 3> A;
   BLA::Matrix<3, 6> transA;
@@ -480,17 +486,36 @@ void ts_calibration (
 
   struct f_point faS, fbS, fcS, fdS, feS, ffS, faT, fbT, fcT, fdT, feT, ffT;
 
-  faS.x = (float)aS.x; fbS.x = (float)bS.x; fcS.x = (float)cS.x, fdS.x = (float)dS.x; feS.x = (float)eS.x; ffS.x = (float)fS.x;
-  faS.y = (float)aS.y; fbS.y = (float)bS.y; fcS.y = (float)cS.y; fdS.y = (float)dS.y; feS.y = (float)eS.y; ffS.y = (float)fS.y;
+  faS.x = (float)aS.x;
+  fbS.x = (float)bS.x;
+  fcS.x = (float)cS.x, fdS.x = (float)dS.x;
+  feS.x = (float)eS.x;
+  ffS.x = (float)fS.x;
+  faS.y = (float)aS.y;
+  fbS.y = (float)bS.y;
+  fcS.y = (float)cS.y;
+  fdS.y = (float)dS.y;
+  feS.y = (float)eS.y;
+  ffS.y = (float)fS.y;
 
-  faT.x = (float)aT.x; fbT.x = (float)bT.x; fcT.x = (float)cT.x; fdT.x = (float)dT.x; feT.x = (float)eT.x; ffT.x = (float)fT.x;
-  faT.y = (float)aT.y; fbT.y = (float)bT.y; fcT.y = (float)cT.y; fdT.y = (float)dT.y; feT.y = (float)eT.y; ffT.y = (float)fT.y;
+  faT.x = (float)aT.x;
+  fbT.x = (float)bT.x;
+  fcT.x = (float)cT.x;
+  fdT.x = (float)dT.x;
+  feT.x = (float)eT.x;
+  ffT.x = (float)fT.x;
+  faT.y = (float)aT.y;
+  fbT.y = (float)bT.y;
+  fcT.y = (float)cT.y;
+  fdT.y = (float)dT.y;
+  feT.y = (float)eT.y;
+  ffT.y = (float)fT.y;
 
   A = { faT.x, faT.y, 1,
         fbT.x, fbT.y, 1,
         fcT.x, fcT.y, 1,
         fdT.x, fdT.y, 1,
-        feT.x, feT.y, 1,             
+        feT.x, feT.y, 1,
         ffT.x, ffT.y, 1 };
 
   X = { faS.x,
@@ -508,25 +533,25 @@ void ts_calibration (
         ffS.y };
 
   /* Now compute [AtA]^-1 * AtA * X and [AtA]^-1 * AtA * Y */
-  Serial.print ("A = ");
+  Serial.print("A = ");
   Serial.println(A);
 
   transA = ~A;
-  Serial.print ("transA = ");
+  Serial.print("transA = ");
   Serial.println(transA);
 
   B = transA * A;
-  Serial.print ("Before inversion, B = ");
+  Serial.print("Before inversion, B = ");
   Serial.println(B);
 
-  if (!Invert(B) ) {
+  if (!Invert(B)) {
     Serial.println("Singular matrix in computation of inverse of B = transA*A!");
   }
-  Serial.print ("After inversion, B = ");
+  Serial.print("After inversion, B = ");
   Serial.println(B);
 
   C = B * transA;
-  Serial.print ("C = ");
+  Serial.print("C = ");
   Serial.println(C);
 
   X_coeff = C * X;
@@ -534,8 +559,12 @@ void ts_calibration (
 
   /* transfer the X and Y coefficients to the Greek-letter variables
      Note that BLA requires round brackets while MatrixMath requires square ones */
-  alphaX = X_coeff(0); betaX = X_coeff(1); deltaX = X_coeff(2);
-  alphaY = Y_coeff(0); betaY = Y_coeff(1); deltaY = Y_coeff(2);
+  alphaX = X_coeff(0);
+  betaX = X_coeff(1);
+  deltaX = X_coeff(2);
+  alphaY = Y_coeff(0);
+  betaY = Y_coeff(1);
+  deltaY = Y_coeff(2);
 
   Serial.println();
 }
